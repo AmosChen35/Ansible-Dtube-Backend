@@ -1,0 +1,35 @@
+- name: Installing "ctube" group
+  group:
+      name: ctube
+      state: present
+
+
+- name: Installing user accounts for zom
+  user:
+      name: "{{ item }}"
+      shell: /bin/bash
+      group: ctube
+  with_items:
+    - 'zom'
+
+- name: Installing zom key for zom user
+  authorized_key:
+      user: zom
+      state: present
+      manage_dir: yes
+      key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa6BGoEdyflfWvbUAEG8cA6N4RBF+OiqwHorpL2Ua/IIb/h/t1cbmPsG7iMo0wbQOywjH5W0vpgh+nOaYyDQApCN2xXj+3J9rmuoPsm/vYoJ98U9lae2hubsps7tGGJyqT6Nb3J6PH/5Kji8qMtjW1dzJE64aSK91HmdSOvMThlpIgExoQvGTyQbn4lFVkbWFoCGqzOMb/2axreNKgQUsA4NDK5M7p9SGEkkwN/F8AHPjzSL3jmdvsPuvfLePM6cgD/TjH4OaJjEIm1v+u/yry1GR9YOZ+skf25p0TkVIcPvAsF71z3T+7KxZ/f1vZO1Lq6CHK7w73+SXmscpfhoyx zom"
+
+- name: Installing zom key for root user
+  authorized_key:
+        user: root
+        state: present
+        manage_dir: yes
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDa6BGoEdyflfWvbUAEG8cA6N4RBF+OiqwHorpL2Ua/IIb/h/t1cbmPsG7iMo0wbQOywjH5W0vpgh+nOaYyDQApCN2xXj+3J9rmuoPsm/vYoJ98U9lae2hubsps7tGGJyqT6Nb3J6PH/5Kji8qMtjW1dzJE64aSK91HmdSOvMThlpIgExoQvGTyQbn4lFVkbWFoCGqzOMb/2axreNKgQUsA4NDK5M7p9SGEkkwN/F8AHPjzSL3jmdvsPuvfLePM6cgD/TjH4OaJjEIm1v+u/yry1GR9YOZ+skf25p0TkVIcPvAsF71z3T+7KxZ/f1vZO1Lq6CHK7w73+SXmscpfhoyx zom"
+
+- name: Setting nopasswd sudo privileges
+  lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%ctube'
+        line: '%ctube ALL=(ALL) NOPASSWD: ALL'
+        create: true

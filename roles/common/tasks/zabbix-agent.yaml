@@ -1,0 +1,7 @@
+- name: Create zabbix agent conf to zabbix directory
+  template:
+    src: zabbix_agentd.conf.j2
+    dest: /etc/zabbix/zabbix_agentd.conf
+    mode: 0777
+  notify:
+  - restarting apache and zabbix

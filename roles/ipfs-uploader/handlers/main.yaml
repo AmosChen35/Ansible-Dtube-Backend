@@ -1,0 +1,25 @@
+- name: Cleaning old ipfs-uploader directory
+  file:
+    state: directory
+    path: "/home/{{ ipfs_executor }}/ipfs-uploader/"
+  listen: new ipfs-uploader
+
+
+- name: Installing new ipfs-uploader
+  unarchive:
+    remote_src: yes
+    src: "/home/{{ ipfs_executor }}/ipfs-uploader.zip"
+    dest: "/home/{{ ipfs_executor }}/"
+  listen: new ipfs-uploader
+
+- name: Moving tmux session working directory to /home/heimindanger/
+  command: tmux send -t upldr.0 "cd /home/{{ ipfs_executor }}/" ENTER
+  become: true
+  become_user: "{{ ipfs_executor }}"
+  become_method: sudo
+  listen: new ipfs-uploader
+
+- name: Ending old ipfs-uploader instance
+  command: pkill dotnet -9
+  listen: new ipfs-uploader
+  ignore_errors: yes

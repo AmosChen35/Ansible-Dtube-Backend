@@ -1,0 +1,11 @@
+- name: Installing nginx with apt
+  apt:
+    name: nginx
+    state: latest
+
+- name: Install nginx config
+  template:
+    src: templates/default.j2
+    dest: /etc/nginx/sites-enabled/default
+    force: no
+  notify: Reloading nginx service in preperation to recieve new certificate

@@ -1,0 +1,47 @@
+- hosts: all
+  remote_user: ubuntu
+  gather_facts: no
+  tasks:
+    - name: Installing python so Ansible can run first time
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+
+- hosts: all
+  remote_user: ubuntu
+  roles:
+    - common
+
+- hosts: upldrg
+  remote_user: ubuntu
+  roles:
+    - ffmpeg
+    - ipfs
+    - ipfs-uploader
+    - nginx
+    - certbot
+
+- hosts: upldr
+  remote_user: ubuntu
+  roles:
+    - ipfs
+    - ipfs-uploader
+    - nginx
+    - certbot
+
+- hosts: saver
+  remote_user: ubuntu
+  roles:
+    - ipfs
+    - maria
+
+- hosts: snap
+  remote_user: ubuntu
+  roles:
+    - ipfs
+    - ipfs-uploader
+    - nginx
+    - certbot
+
+- hosts: zabbix
+  remote_user: ubuntu
+  roles:
+    - zabbix

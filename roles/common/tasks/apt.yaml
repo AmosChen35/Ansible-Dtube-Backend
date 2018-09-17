@@ -1,0 +1,38 @@
+- name: Downloading Nodejs 9.x installation script
+  get_url:
+    url: https://deb.nodesource.com/setup_9.x
+    #checksum: sha256:78a769f33d1c5c818f84bc7c44ddb5960361b2b36ae6ae0f59425af21ecb771c
+    mode: 0777
+    dest: "{{ home_dir }}/setup.sh"
+
+- name: Installing Nodejs
+  command: "{{ home_dir }}/setup.sh"
+  args:
+    creates: /usr/bin/npm
+  become_user: root
+
+- name: Update and upgrade apt packages
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 43200
+
+- name: Installing common tools with apt
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'sudo'
+    - 'curl'
+    - 'wget'
+    - 'htop'
+    - 'nload'
+    - 'locate'
+    - 'vim'
+    - 'zabbix-agent'
+    - 'tmux'
+    - 'acl'
+    - 'net-tools'
+    - 'nodejs'
+    - 'unzip'
+    - 'iotop'

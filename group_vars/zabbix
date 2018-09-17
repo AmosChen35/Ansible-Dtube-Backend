@@ -1,0 +1,7 @@
+---
+#The veriable file used by the playbooks in the "upldrg" group
+
+home_dir: "{{ ansible_env.HOME }}"
+ipfs_executor: "zom"
+server_name: zabbix
+domain: survivehouse.com

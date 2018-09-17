@@ -1,0 +1,34 @@
+- name: download nasm tarball
+  get_url:
+    url: https://www.nasm.us/pub/nasm/releasebuilds/2.14rc15/nasm-2.14rc15.zip
+    checksum: sha256:490f3b3fbbdb27040b2ee37cb5cf587bf91b13e1fcf95bb6dd115491a5de0ab1
+    mode: 0777
+    dest: "{{ ffmpeg_source_dir }}/nasm.zip"
+
+- name: ensure tomcat directory exists
+  file:
+    path: "{{ ffmpeg_source_dir }}/nasm"
+    state: directory
+
+- name: extract nasm.zip
+  unarchive:
+    src: "{{ ffmpeg_source_dir }}/nasm.zip"
+    dest: "{{ ffmpeg_source_dir }}/nasm"
+    creates: "{{ ffmpeg_source_dir }}/nasm/README"
+    remote_src: yes
+
+- name: compile nasm
+  shell: 'cd {{ ffmpeg_source_dir }}/nasm; {{ item }} creates={{ ffmpeg_bin_dir }}/nasm'
+  with_items:
+    - autoreconf
+    - rm -rf autom4te.cache config.log config.status
+    - rm -f Makefile rdoff/Makefile doc/Makefile
+    - rm -f config.h.in config.h config/config.h
+    - ./configure --prefix={{ ffmpeg_build }} --bindir={{ ffmpeg_bin_dir }}
+    - make
+    - make install
+
+- name: reset nasm
+  shell: 'cd {{ ffmpeg_source_dir }}/nasm; {{ item}} removes={{ ffmpeg_source_dir }}/nasm/Makefile'
+  with_items:
+    - make distclean

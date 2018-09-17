@@ -1,0 +1,10 @@
+- name: Getting certbot certificate (may fail with server firewall blocked port 80 and 433)
+  command: /usr/bin/certbot certonly --webroot --webroot-path=/var/www/html --domain {{ server_name }}.{{ domain }} --email {{ ipfs_executor }}@{{ domain }} --non-interactive --agree-tos
+  args:
+    creates: /etc/letsencrypt/live/{{ server_name}}.{{ domain }}/fullchain.pem
+
+- name: Install ssl nginx config
+  template:
+    src: templates/default.j2
+    dest: /etc/nginx/sites-enabled/default
+  notify: Reloading nginx service

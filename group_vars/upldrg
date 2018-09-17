@@ -1,0 +1,9 @@
+---
+#The veriable file used by the playbooks in the "upldrg" group
+
+home_dir: "{{ ansible_env.HOME }}"
+ipfs_executor: "zom"
+aspnetcore_environment_cpu: "ASPNETCORE_ENVIRONMENT=prod_cpu"
+aspnetcore_environment_gpu: "ASPNETCORE_ENVIRONMENT=prod_gpu"
+server_name: upldrg
+domain: survivehouse.com

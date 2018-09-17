@@ -1,0 +1,7 @@
+---
+#The veriable file used by the playbooks in the "common" group
+
+home_dir: "{{ ansible_env.HOME }}"
+listen_port: 10050
+saver_name: saver
+domain: survivehouse.com

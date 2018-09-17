@@ -1,0 +1,7 @@
+---
+# Handlers for common notifications
+
+- name: restarting apache and zabbix
+  service:
+    name: "zabbix-agent"
+    state: restarted

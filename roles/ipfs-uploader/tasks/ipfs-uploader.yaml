@@ -1,0 +1,56 @@
+- name: Exporting environment variable for cpu hosts
+  lineinfile:
+        dest: /etc/environment
+        state: present
+        regexp: "^{{ aspnetcore_environment_cpu }}"
+        line: "{{ aspnetcore_environment_cpu }}"
+        create: true
+
+- name: Copying ipfs-uploader from local host
+  copy:
+    src: ipfs-uploader.zip
+    dest: "/home/{{ ipfs_executor }}/ipfs-uploader.zip"
+    mode: 0777
+  become: true
+
+- name: Cleaning old ipfs-uploader directory
+  file:
+    state: absent
+    path: "/home/{{ ipfs_executor }}/ipfs-uploader"
+
+- name: Installing new ipfs-uploader
+  unarchive:
+    src: "/home/{{ ipfs_executor }}/ipfs-uploader.zip"
+    dest: "/home/{{ ipfs_executor }}"
+    remote_src: yes
+
+- name: Ending old ipfs-uploader instance
+  command: pkill dotnet -9
+  ignore_errors: yes
+
+- name: "Changeing permissions on ipfs-uploader directory making it {{ ipfs_executor }}:ctube 0770"
+  file:
+    path: "/home/{{ ipfs_executor }}/ipfs-uploader/"
+    owner: "{{ ipfs_executor }}"
+    group: ctube
+    mode: 0770
+    recurse: yes
+
+- name: "Starting upldr tmux session as {{ ipfs_executor }} (may fail when session already exists)"
+  command: tmux new -d -s upldr
+  become: true
+  become_user: "{{ ipfs_executor }}"
+  become_method: sudo
+  ignore_errors: yes
+
+- name: "Moving tmux session working directory to /home/{{ ipfs_executor }}/ipfs-uploader/Uploader.Web"
+  command: tmux send -t upldr.0 "cd /home/{{ ipfs_executor }}/ipfs-uploader" ENTER
+  become: true
+  become_user: "{{ ipfs_executor }}"
+  become_method: sudo
+
+- name: "Starting ipfs-uploader in afforementioned tmux session as {{ ipfs_executor }} as a CPU instance"
+  command: tmux send -t upldr.0 "{{ aspnetcore_environment_cpu }}  dotnet /home/{{ ipfs_executor }}/ipfs-uploader/Uploader.Web/bin/Release/netcoreapp2.0/publish/Uploader.Web.dll" ENTER
+  become: true
+  become_user: "{{ ipfs_executor }}"
+  become_method: sudo

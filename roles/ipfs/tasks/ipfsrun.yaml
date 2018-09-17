@@ -1,0 +1,28 @@
+- name: Changing permissions on ipfs binary making it zom:ctube 0770
+  file:
+    path: /usr/local/bin/ipfs
+    owner: "{{ ipfs_executor }}"
+    group: ctube
+    mode: 0777
+
+
+- name: Running ipfs init
+  command: /usr/local/bin/ipfs init
+  args:
+    creates: "/home/{{ ipfs_executor }}/.ipfs/config"
+  become: true
+  become_method: sudo
+  become_user: "{{ ipfs_executor }}"
+
+- name: Starting ipfs tmux session as zom (may fail when session already exists)
+  command: tmux new -d -s ipfs
+  become: true
+  become_method: sudo
+  become_user: "{{ ipfs_executor }}"
+  ignore_errors: yes
+
+- name: Starting ipfs daemon in afforementioned tmux session as zom
+  command: tmux send -t ipfs.0 "IPFS_FD_MAX=32768 ipfs daemon" ENTER
+  become: true
+  become_method: sudo
+  become_user: "{{ ipfs_executor }}"
